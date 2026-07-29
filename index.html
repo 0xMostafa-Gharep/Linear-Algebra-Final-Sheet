@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Database Final Exam Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#132029;
+    --bg-panel:#182a34;
+    --bg-panel-2:#1e333f;
+    --chalk-line: rgba(238,240,230,0.09);
+    --chalk: #eef0e6;
+    --chalk-dim: #9fb0ac;
+    --accent: #f2c14e;
+    --accent-dim: #c9a23f;
+    --ok: #7fc9a3;
+    --ok-bg: rgba(127,201,163,0.14);
+    --bad: #e08a72;
+    --bad-bg: rgba(224,138,114,0.14);
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, #1c313c 0%, transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, #16262f 0%, transparent 55%),
+      var(--bg);
+    color:var(--chalk);
+    font-family:'Tajawal', sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'JetBrains Mono', monospace;}
+  .display{font-family:'Fraunces', serif;}
+
+  .board-texture{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      repeating-linear-gradient(0deg, var(--chalk-line) 0px, var(--chalk-line) 1px, transparent 1px, transparent 64px),
+      repeating-linear-gradient(90deg, var(--chalk-line) 0px, var(--chalk-line) 1px, transparent 1px, transparent 64px);
+    opacity:0.5;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 20%, black 30%, transparent 90%);
+  }
+
+  .wrap{position:relative; z-index:1; max-width:880px; margin:0 auto; padding:28px 20px 90px;}
+
+  header.hero{ text-align:center; padding:18px 0 30px; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono', monospace; font-size:12.5px; letter-spacing:.14em;
+    color:var(--accent); text-transform:uppercase; background:rgba(242,193,78,0.08);
+    border:1px solid rgba(242,193,78,0.25); padding:6px 14px; border-radius:100px;
+  }
+  h1.display{
+    font-size:clamp(28px, 5vw, 44px); font-weight:700; margin:16px 0 8px; line-height:1.25;
+  }
+  h1.display .p{color:var(--accent);}
+  .subtitle{color:var(--chalk-dim); font-size:15px; max-width:520px; margin:0 auto; line-height:1.9;}
+
+  nav.tabs{
+    display:flex; gap:8px; justify-content:center; margin:26px 0 10px; flex-wrap:wrap;
+  }
+  .tab-btn{
+    font-family:'Tajawal'; font-weight:700; font-size:14.5px; cursor:pointer;
+    background:var(--bg-panel); color:var(--chalk-dim); border:1px solid var(--chalk-line);
+    padding:10px 20px; border-radius:100px; transition:.18s ease;
+  }
+  .tab-btn:hover{ color:var(--chalk); border-color:rgba(242,193,78,0.4); }
+  .tab-btn.active{ background:var(--accent); color:#1a1508; border-color:var(--accent); }
+
+  section.panel{ display:none; animation:fade .35s ease; }
+  section.panel.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .statusbar{
+    display:flex; justify-content:space-between; align-items:center; gap:14px;
+    background:var(--bg-panel); border:1px solid var(--chalk-line); border-radius:100px;
+    padding:10px 20px; margin:18px 0 22px; font-size:14px; color:var(--chalk-dim);
+  }
+  .statusbar b{ color:var(--accent); font-family:'JetBrains Mono'; }
+  .progress-track{ flex:1; height:6px; background:rgba(238,240,230,0.1); border-radius:100px; overflow:hidden; margin:0 14px; }
+  .progress-fill{ height:100%; background:var(--accent); width:0%; transition:width .3s ease; }
+  .iconbtn{
+    background:none; border:1px solid var(--chalk-line); color:var(--chalk-dim);
+    border-radius:100px; padding:7px 14px; font-family:'Tajawal'; font-size:13px; font-weight:700;
+    cursor:pointer; transition:.15s;
+  }
+  .iconbtn:hover{ color:var(--accent); border-color:var(--accent-dim); }
+
+  .card{
+    background:var(--bg-panel); border:1px solid var(--chalk-line); border-radius:var(--radius);
+    padding:28px 26px; margin-bottom:16px;
+  }
+  .q-index{ font-family:'JetBrains Mono'; color:var(--accent-dim); font-size:13px; margin-bottom:10px; }
+  .q-text{ font-size:19px; line-height:1.7; margin-bottom:20px; font-weight:500; }
+
+  .options{ display:grid; gap:10px; }
+  .opt{
+    display:flex; align-items:center; gap:12px; text-align:right;
+    background:var(--bg-panel-2); border:1px solid var(--chalk-line); border-radius:10px;
+    padding:14px 16px; cursor:pointer; font-size:15.5px; transition:.15s ease; color:var(--chalk);
+  }
+  .opt:hover{ border-color:rgba(242,193,78,0.45); }
+  .opt .tag{
+    font-family:'JetBrains Mono'; font-size:12px; width:22px; height:22px; border-radius:6px;
+    border:1px solid var(--chalk-line); display:flex; align-items:center; justify-content:center;
+    color:var(--chalk-dim); flex-shrink:0;
+  }
+  .opt.correct{ background:var(--ok-bg); border-color:var(--ok); }
+  .opt.correct .tag{ background:var(--ok); color:#0d1f16; border-color:var(--ok); }
+  .opt.wrong{ background:var(--bad-bg); border-color:var(--bad); }
+  .opt.wrong .tag{ background:var(--bad); color:#2a1108; border-color:var(--bad); }
+  .opt.disabled{ pointer-events:none; opacity:.85; }
+
+  .feedback{ margin-top:16px; font-size:14px; padding:12px 16px; border-radius:10px; display:none; }
+  .feedback.show{ display:block; animation:fade .25s ease; }
+  .feedback.ok{ background:var(--ok-bg); color:var(--ok); }
+  .feedback.bad{ background:var(--bad-bg); color:var(--bad); }
+
+  .nextbar{ display:flex; justify-content:flex-end; margin-top:18px; gap:10px; }
+  .nextbtn{
+    background:var(--accent); color:#1a1508; border:none; font-family:'Tajawal'; font-weight:700;
+    font-size:14.5px; padding:11px 24px; border-radius:100px; cursor:pointer; transition:.15s;
+  }
+  .nextbtn:disabled{ opacity:.35; cursor:not-allowed; }
+  .nextbtn:not(:disabled):hover{ background:#ffd873; }
+  .ghostbtn{
+    background:none; color:var(--chalk-dim); border:1px solid var(--chalk-line); font-family:'Tajawal';
+    font-weight:700; font-size:14.5px; padding:11px 22px; border-radius:100px; cursor:pointer; transition:.15s;
+  }
+  .ghostbtn:hover{ color:var(--chalk); border-color:rgba(238,240,230,0.35); }
+
+  /* True/False */
+  .tf-card .q-text{ margin-bottom:24px; }
+  .tf-buttons{ display:flex; gap:12px; }
+  .tf-btn{
+    flex:1; padding:16px; border-radius:10px; border:1px solid var(--chalk-line);
+    background:var(--bg-panel-2); color:var(--chalk); font-family:'Tajawal'; font-weight:700;
+    font-size:16px; cursor:pointer; transition:.15s;
+  }
+  .tf-btn:hover{ border-color:rgba(242,193,78,0.45); }
+  .tf-btn.correct{ background:var(--ok-bg); border-color:var(--ok); color:var(--ok); }
+  .tf-btn.wrong{ background:var(--bad-bg); border-color:var(--bad); color:var(--bad); }
+  .tf-btn.disabled{ pointer-events:none; }
+
+  .end-card{ text-align:center; padding:50px 20px; }
+  .end-card .big{ font-family:'Fraunces'; font-size:42px; color:var(--accent); }
+  .restart-btn{
+    margin-top:18px; background:var(--accent); color:#1a1508; border:none; font-weight:700;
+    padding:12px 28px; border-radius:100px; cursor:pointer; font-family:'Tajawal'; font-size:15px;
+  }
+
+  /* ---- Essay: step-by-step ---- */
+  .essay-item{
+    background:var(--bg-panel); border:1px solid var(--chalk-line); border-radius:var(--radius);
+    margin-bottom:14px; overflow:hidden;
+  }
+  .essay-head{
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding:20px 22px; cursor:pointer; font-size:16px; font-weight:700;
+  }
+  .essay-head .tagnum{
+    font-family:'JetBrains Mono'; color:var(--accent-dim); font-size:12.5px; display:block; margin-bottom:6px; font-weight:500;
+  }
+  .essay-head .chevron{ transition:.2s ease; color:var(--chalk-dim); flex-shrink:0; }
+  .essay-item.open .chevron{ transform:rotate(180deg); }
+  .essay-body{ display:none; padding:0 22px 22px; }
+  .essay-item.open .essay-body{ display:block; }
+
+  .steps-status{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    font-family:'JetBrains Mono'; font-size:12.5px; color:var(--chalk-dim); margin-bottom:14px;
+  }
+  .steps-track{ flex:1; height:5px; background:rgba(238,240,230,0.1); border-radius:100px; overflow:hidden; }
+  .steps-fill{ height:100%; background:var(--accent); width:0%; transition:width .25s ease; }
+
+  .step-row{
+    background:var(--bg-panel-2); border:1px solid var(--chalk-line); border-radius:10px;
+    padding:15px 18px; margin-bottom:10px; font-size:15px; line-height:1.85; color:var(--chalk);
+    animation:fade .3s ease;
+  }
+  .step-row .step-label{ color:var(--accent); font-family:'JetBrains Mono'; font-size:12px; display:block; margin-bottom:6px; font-weight:700; }
+
+  .cmp-table{ width:100%; border-collapse:collapse; margin-top:10px; }
+  .cmp-table th{
+    background:rgba(242,193,78,0.08); color:var(--accent); font-family:'Tajawal'; font-weight:700;
+    padding:9px 14px; text-align:center; border:1px solid var(--chalk-line); font-size:13.5px;
+  }
+  .cmp-table td{
+    padding:9px 14px; border:1px solid var(--chalk-line); font-size:13.5px; color:var(--chalk);
+    vertical-align:top; text-align:center;
+  }
+
+  .locked-hint{
+    text-align:center; color:var(--chalk-dim); font-size:13.5px; padding:10px 0 4px; font-style:italic;
+  }
+
+  footer{ text-align:center; color:var(--chalk-dim); font-size:12.5px; margin-top:40px; opacity:.6; }
+
+  @media (max-width:520px){
+    .card{ padding:20px 18px; }
+    .q-text{ font-size:17px; }
+  }
+</style>
+</head>
+<body>
+<div class="board-texture"></div>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="eyebrow">Database · Final Sheet</span>
+    <h1 class="display">.Quick Revision <span class="p">Database</span><br>ومتنساش تدعيلي. 🤲😊</h1>
+    <p class="subtitle">20 اختياري، 15 صح وغلط، و4 أسئلة مقالي.</p>
+  </header>
+
+  <nav class="tabs">
+    <div class="tab-btn active" data-tab="mcq">اختياري.</div>
+    <div class="tab-btn" data-tab="tf">صح وغلط.</div>
+    <div class="tab-btn" data-tab="essay">أسئلة المقالي.</div>
+  </nav>
+
+  <!-- MCQ PANEL -->
+  <section class="panel active" id="panel-mcq">
+    <div class="statusbar">
+      <span>السؤال <b id="mcq-pos">1</b> / <span id="mcq-total">20</span></span>
+      <div class="progress-track"><div class="progress-fill" id="mcq-progress"></div></div>
+      <span>الصح: <b id="mcq-score">0</b></span>
+      <button class="iconbtn" id="mcq-shuffle">🔀 كوكتيل</button>
+    </div>
+    <div id="mcq-stage"></div>
+  </section>
+
+  <!-- TF PANEL -->
+  <section class="panel" id="panel-tf">
+    <div class="statusbar">
+      <span>السؤال <b id="tf-pos">1</b> / <span id="tf-total">15</span></span>
+      <div class="progress-track"><div class="progress-fill" id="tf-progress"></div></div>
+      <span>الصح: <b id="tf-score">0</b></span>
+      <button class="iconbtn" id="tf-shuffle">🔀 كوكتيل</button>
+    </div>
+    <div id="tf-stage"></div>
+  </section>
+
+  <!-- ESSAY PANEL -->
+  <section class="panel" id="panel-essay">
+    <div class="statusbar" style="justify-content:center;">
+      <span>دوس على السؤال عشان يظهرلك الحل.</span>
+    </div>
+    <div id="essay-stage"></div>
+  </section>
+
+  <footer>راجع براحتك ✍️</footer>
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const mcq = [
+{q:"What is a Database?", opts:["A programming language","A structured collection of data","A hardware device","A network protocol"], a:1},
+{q:"What is a DBMS (Database Management System)?", opts:["A hardware device","A programming language","A software used to manage databases","A network system"], a:2},
+{q:"Which of the following is an advantage of DBMS?", opts:["Data redundancy increases","Data consistency improves","Data duplication increases","Security decreases"], a:1},
+{q:"Data Redundancy means:", opts:["Data is stored only once","Duplicate data stored in different places","Data encryption","Data backup"], a:1},
+{q:"Data Integrity refers to:", opts:["Data duplication","Accuracy and consistency of data","Data deletion","Data compression"], a:1},
+{q:"Data Independence means:", opts:["Data depends on application programs","Data can be changed without affecting applications","Data cannot be modified","Data is duplicated"], a:1},
+{q:"An Entity is:", opts:["A database table","A real-world object represented in the database","A relationship","A query"], a:1},
+{q:"An Attribute is:", opts:["A table","A property of an entity","A relationship","A database"], a:1},
+{q:"A Relationship represents:", opts:["A key","A connection between entities","A database","A field"], a:1},
+{q:"A Table is:", opts:["A collection of rows and columns","A report","A programming language","A relationship"], a:0},
+{q:"Which key uniquely identifies each record in a table?", opts:["Foreign Key","Composite Key","Primary Key","Candidate Key"], a:2},
+{q:"A Foreign Key is mainly used to:", opts:["Delete records","Link two tables","Encrypt data","Create reports"], a:1},
+{q:"A Composite Primary Key consists of:", opts:["One attribute","Two or more attributes","One Foreign Key","One Derived Attribute"], a:1},
+{q:"A Weak Entity is:", opts:["An entity with its own primary key","An entity that depends on another entity","An entity without attributes","An entity without relationships"], a:1},
+{q:"In ER-to-Relational Mapping, the first step is:", opts:["Mapping Binary Relationships","Mapping Weak Entity Types","Mapping Regular Entity Types","Mapping Unary Relationships"], a:2},
+{q:"In Binary 1:1 Mapping with mandatory participation from both sides:", opts:["Three tables are created","Two tables are created","One merged table can be created","No table is created"], a:2},
+{q:"In Binary M:N Mapping:", opts:["One table is created","Two tables are created","A third table is created","No Foreign Keys are required"], a:2},
+{q:"In One-to-Many Mapping, the Foreign Key is added to the:", opts:["One side","Many side","Parent table only","Relationship table"], a:1},
+{q:"Which relationship type requires creating a separate relation (third table)?", opts:["Binary 1:1 Mandatory","Binary M:N","Unary Relationship","Weak Entity"], a:1},
+{q:"A Row in a table is also called:", opts:["Attribute","Record","Field","Entity"], a:1},
+];
+
+const tf = [
+{q:"A Database is an organized collection of related data.", a:true},
+{q:"DBMS increases data redundancy.", a:false},
+{q:"Data Integrity means maintaining the accuracy and consistency of data.", a:true},
+{q:"Data Independence means changes in data structure do not necessarily affect application programs.", a:true},
+{q:"An Entity represents a real-world object.", a:true},
+{q:"An Attribute describes the properties of an entity.", a:true},
+{q:"A Primary Key may contain duplicate values.", a:false},
+{q:"A Foreign Key is used to establish a relationship between tables.", a:true},
+{q:"A Weak Entity can exist without depending on another entity.", a:false},
+{q:'In a One-to-Many (1:M) relationship, the Foreign Key is placed on the "Many" side.', a:true},
+{q:"A Many-to-Many (M:N) relationship is mapped by creating a separate relation (table).", a:true},
+{q:"A Composite Primary Key is formed from more than one attribute.", a:true},
+{q:"Every table must have a Foreign Key.", a:false},
+{q:"A Row in a table is also called a Record.", a:true},
+{q:"Mapping is the process of converting an ER Diagram into Relational Tables.", a:true},
+];
+
+/* Each essay item: head + ordered points revealed one at a time (memorization mode). */
+const essay = [
+{
+  head:"1) Define the following terms",
+  sub:"5 key terms",
+  steps:[
+    `<b>Database:</b> An organized collection of related data that can be easily accessed, managed, and updated.`,
+    `<b>DBMS (Database Management System):</b> Software that allows users to create, store, retrieve, and manage databases efficiently.`,
+    `<b>Entity:</b> A real-world object or concept about which data is stored.`,
+    `<b>Attribute:</b> A property or characteristic that describes an entity.`,
+    `<b>Relationship:</b> An association between two or more entities.`,
+  ]
+},
+{
+  head:"2) Differentiate between the following",
+  sub:"Primary Key vs Foreign Key · Strong vs Weak Entity",
+  steps:[
+    `<b>Primary Key vs Foreign Key</b>
+     <table class="cmp-table">
+       <tr><th>Primary Key</th><th>Foreign Key</th></tr>
+       <tr><td>Uniquely identifies each record</td><td>Links one table to another</td></tr>
+       <tr><td>Cannot contain NULL values</td><td>May contain NULL values</td></tr>
+       <tr><td>One primary key per table</td><td>A table may contain multiple foreign keys</td></tr>
+     </table>`,
+    `<b>Strong Entity vs Weak Entity</b>
+     <table class="cmp-table">
+       <tr><th>Strong Entity</th><th>Weak Entity</th></tr>
+       <tr><td>Has its own primary key</td><td>Does not have a complete primary key</td></tr>
+       <tr><td>Exists independently</td><td>Depends on another entity</td></tr>
+       <tr><td>Can exist alone</td><td>Cannot exist without the owner entity</td></tr>
+     </table>`,
+  ]
+},
+{
+  head:"3) Advantages of using a DBMS",
+  sub:"8 points",
+  steps:[
+    `Reduces data redundancy.`,
+    `Improves data consistency.`,
+    `Provides data security.`,
+    `Supports data sharing.`,
+    `Provides backup and recovery.`,
+    `Maintains data integrity.`,
+    `Supports data independence.`,
+    `Allows multiple users to access the database simultaneously.`,
+  ]
+},
+{
+  head:"4) Steps of ER-to-Relational Mapping",
+  sub:"7 steps, in order",
+  steps:[
+    `<b>Step 1:</b> Mapping Regular Entity Types.`,
+    `<b>Step 2:</b> Mapping Weak Entity Types.`,
+    `<b>Step 3:</b> Mapping Binary 1:1 Relationship Types.`,
+    `<b>Step 4:</b> Mapping Binary 1:N Relationship Types.`,
+    `<b>Step 5:</b> Mapping Binary M:N Relationship Types.`,
+    `<b>Step 6:</b> Mapping Multivalued Attributes.`,
+    `<b>Step 7:</b> Mapping N-ary Relationship Types.`,
+  ]
+},
+];
+
+/* ---------------- HELPERS ---------------- */
+function shuffleArr(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+/* ---------------- TABS ---------------- */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------------- MCQ ENGINE ---------------- */
+let mcqOrder = mcq.map((_,i)=>i);
+let mcqIdx = 0, mcqScore = 0, mcqAnswered = false;
+
+function renderMCQ(){
+  document.getElementById('mcq-pos').textContent = Math.min(mcqIdx+1, mcq.length);
+  document.getElementById('mcq-total').textContent = mcq.length;
+  document.getElementById('mcq-score').textContent = mcqScore;
+  document.getElementById('mcq-progress').style.width = ((mcqIdx)/mcq.length*100)+'%';
+  mcqAnswered = false;
+
+  if(mcqIdx >= mcq.length){
+    document.getElementById('mcq-stage').innerHTML = `
+      <div class="card end-card">
+        <div class="big">${mcqScore} / ${mcq.length}</div>
+        <p style="color:var(--chalk-dim)">خلصت كل أسئلة الاختياري!</p>
+        <button class="restart-btn" onclick="restartMCQ()">ابدأ من جديد</button>
+      </div>`;
+    document.getElementById('mcq-progress').style.width='100%';
+    return;
+  }
+
+  const item = mcq[mcqOrder[mcqIdx]];
+  const letters = ['A','B','C','D'];
+  document.getElementById('mcq-stage').innerHTML = `
+    <div class="card">
+      <div class="q-index mono">MCQ · Question ${mcqIdx+1}</div>
+      <div class="q-text">${item.q}</div>
+      <div class="options">
+        ${item.opts.map((o,i)=>`<div class="opt" data-i="${i}"><span class="tag">${letters[i]}</span><span>${o}</span></div>`).join('')}
+      </div>
+      <div class="feedback" id="mcq-feedback"></div>
+      <div class="nextbar"><button class="nextbtn" id="mcq-next" disabled>التالي</button></div>
+    </div>`;
+
+  document.querySelectorAll('#mcq-stage .opt').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      if(mcqAnswered) return;
+      mcqAnswered = true;
+      const chosen = parseInt(el.dataset.i);
+      const correct = item.a;
+      document.querySelectorAll('#mcq-stage .opt').forEach(o=>o.classList.add('disabled'));
+      el.classList.add(chosen===correct?'correct':'wrong');
+      if(chosen!==correct){
+        document.querySelector(`#mcq-stage .opt[data-i="${correct}"]`).classList.add('correct');
+      } else {
+        mcqScore++;
+        document.getElementById('mcq-score').textContent = mcqScore;
+      }
+      const fb = document.getElementById('mcq-feedback');
+      fb.classList.add('show', chosen===correct?'ok':'bad');
+      fb.textContent = chosen===correct ? '✔ إجابة صحيحة!' : `✘ إجابة غلط — الصح هو "${item.opts[correct]}"`;
+      document.getElementById('mcq-next').disabled = false;
+    });
+  });
+
+  document.getElementById('mcq-next').addEventListener('click', ()=>{
+    mcqIdx++;
+    renderMCQ();
+  });
+}
+function restartMCQ(){ mcqIdx=0; mcqScore=0; renderMCQ(); }
+document.getElementById('mcq-shuffle').addEventListener('click', ()=>{
+  mcqOrder = shuffleArr(mcqOrder);
+  mcqIdx=0; mcqScore=0;
+  renderMCQ();
+});
+renderMCQ();
+
+/* ---------------- TF ENGINE ---------------- */
+let tfOrder = tf.map((_,i)=>i);
+let tfIdx=0, tfScore=0, tfAnswered=false;
+
+function renderTF(){
+  document.getElementById('tf-pos').textContent = Math.min(tfIdx+1, tf.length);
+  document.getElementById('tf-total').textContent = tf.length;
+  document.getElementById('tf-score').textContent = tfScore;
+  document.getElementById('tf-progress').style.width = ((tfIdx)/tf.length*100)+'%';
+  tfAnswered = false;
+
+  if(tfIdx >= tf.length){
+    document.getElementById('tf-stage').innerHTML = `
+      <div class="card end-card">
+        <div class="big">${tfScore} / ${tf.length}</div>
+        <p style="color:var(--chalk-dim)">خلصت كل عبارات الصح والخطأ.</p>
+        <button class="restart-btn" onclick="restartTF()">ابدأ من جديد</button>
+      </div>`;
+    document.getElementById('tf-progress').style.width='100%';
+    return;
+  }
+
+  const item = tf[tfOrder[tfIdx]];
+  document.getElementById('tf-stage').innerHTML = `
+    <div class="card tf-card">
+      <div class="q-index mono">True / False · Statement ${tfIdx+1}</div>
+      <div class="q-text">${item.q}</div>
+      <div class="tf-buttons">
+        <div class="tf-btn" data-v="true">✔ صح (True)</div>
+        <div class="tf-btn" data-v="false">✘ خطأ (False)</div>
+      </div>
+      <div class="feedback" id="tf-feedback"></div>
+      <div class="nextbar"><button class="nextbtn" id="tf-next" disabled>التالي</button></div>
+    </div>`;
+
+  document.querySelectorAll('#tf-stage .tf-btn').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      if(tfAnswered) return;
+      tfAnswered = true;
+      const chosen = el.dataset.v === 'true';
+      document.querySelectorAll('#tf-stage .tf-btn').forEach(b=>b.classList.add('disabled'));
+      el.classList.add(chosen===item.a?'correct':'wrong');
+      if(chosen!==item.a){
+        document.querySelector(`#tf-stage .tf-btn[data-v="${item.a}"]`).classList.add('correct');
+      } else {
+        tfScore++;
+        document.getElementById('tf-score').textContent = tfScore;
+      }
+      const fb = document.getElementById('tf-feedback');
+      fb.classList.add('show', chosen===item.a?'ok':'bad');
+      fb.textContent = chosen===item.a ? '✔ إجابة صحيحة!' : `✘ غلط — الإجابة الصح: ${item.a?'True':'False'}`;
+      document.getElementById('tf-next').disabled = false;
+    });
+  });
+
+  document.getElementById('tf-next').addEventListener('click', ()=>{
+    tfIdx++;
+    renderTF();
+  });
+}
+function restartTF(){ tfIdx=0; tfScore=0; renderTF(); }
+document.getElementById('tf-shuffle').addEventListener('click', ()=>{
+  tfOrder = shuffleArr(tfOrder);
+  tfIdx=0; tfScore=0;
+  renderTF();
+});
+renderTF();
+
+/* ---------------- ESSAY: STEP-BY-STEP ENGINE ---------------- */
+const essayState = essay.map(()=>({ open:false, revealed:0 }));
+
+function renderEssay(){
+  const stage = document.getElementById('essay-stage');
+  stage.innerHTML = essay.map((e,i)=>`
+    <div class="essay-item" id="essay-${i}">
+      <div class="essay-head" onclick="toggleEssay(${i})">
+        <span><span class="tagnum mono">Essay ${i+1} · ${e.sub}</span>${e.head}</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="essay-body" id="essay-body-${i}"></div>
+    </div>`).join('');
+  essay.forEach((e,i)=> renderEssayBody(i));
+}
+
+function renderEssayBody(i){
+  const e = essay[i];
+  const st = essayState[i];
+  const body = document.getElementById('essay-body-'+i);
+  const revealedSteps = e.steps.slice(0, st.revealed);
+  const done = st.revealed >= e.steps.length;
+
+  body.innerHTML = `
+    <div class="steps-status">
+      <span>Point <b class="mono" style="color:var(--accent)">${st.revealed}</b> / ${e.steps.length}</span>
+      <div class="steps-track"><div class="steps-fill" style="width:${(st.revealed/e.steps.length*100)}%"></div></div>
+    </div>
+    ${revealedSteps.map((s,idx)=>`
+      <div class="step-row">
+        <span class="step-label">Point ${idx+1}</span>
+        ${s}
+      </div>`).join('')}
+    ${st.revealed===0 ? `<div class="locked-hint">قبل ما تشوف الخطوات، جرّب تفتكرها. 🧠</div>` : ''}
+    <div class="nextbar">
+      <button class="ghostbtn" onclick="resetEssay(${i}, event)">↺ Start over</button>
+      <button class="nextbtn" ${done?'disabled':''} onclick="revealNext(${i}, event)">${done ? 'All points done ✔' : 'Show next step'}</button>
+    </div>`;
+}
+
+function toggleEssay(i){
+  const el = document.getElementById('essay-'+i);
+  essayState[i].open = !essayState[i].open;
+  el.classList.toggle('open', essayState[i].open);
+}
+function revealNext(i, ev){
+  ev.stopPropagation();
+  if(essayState[i].revealed < essay[i].steps.length) essayState[i].revealed++;
+  renderEssayBody(i);
+}
+function resetEssay(i, ev){
+  ev.stopPropagation();
+  essayState[i].revealed = 0;
+  renderEssayBody(i);
+}
+renderEssay();
+</script>
+</body>
+</html>
